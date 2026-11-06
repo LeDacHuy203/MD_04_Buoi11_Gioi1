@@ -1,0 +1,83 @@
+# ===============================================
+# GLOBAL SERVER CONFIGURATION
+# ===============================================
+server:
+  port: ${SERVER_PORT:8080}
+
+# ===============================================
+# SPRING CONFIGURATION & GLOBAL VARIABLES
+# ===============================================
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:medicine-service}
+
+  # DATASOURCE (POSTGRESQL) - Ho tro bien global moi truong
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:medicine_db}}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+
+  # JPA / HIBERNATE
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+    open-in-view: false
+
+  # REDIS CACHE PROVIDER CONFIGURATION
+  cache:
+    type: ${CACHE_TYPE:redis}
+    redis:
+      # TTL cho Cache medicines la 60 phut (3600000ms = 3600s)
+      time-to-live: ${CACHE_REDIS_TTL:3600000}
+      cache-null-values: false
+      use-key-prefix: true
+      key-prefix: ${CACHE_REDIS_KEY_PREFIX:medicines::}
+
+  # REDIS CONNECTION
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: ${REDIS_TIMEOUT:60000ms}
+
+# ===============================================
+# LOGGING CONFIGURATION
+# ===============================================
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: ${LOG_HIBERNATE_SQL:DEBUG}
+        orm:
+          jdbc:
+            bind: ${LOG_HIBERNATE_BIND:TRACE}
+      springframework:
+        cache: ${LOG_SPRING_CACHE:DEBUG}
+    com:
+      medical:
+        medicine: ${LOG_APP_LEVEL:DEBUG}
+
+# ===============================================
+# ACTUATOR & SWAGGER UI
+# ===============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
